@@ -3,10 +3,10 @@
 # https://github.com/francescor/wirego
 
 # run:
-#   wirego # shot status and profiles 
-#   wirego down  # take wireguard vpn down
-#   wirego NAME  # take wireguard profile NAME.conf up (before take down any other active wireguard vpn) 
-#   wirego qr    # show QR code (needs: qrencode)
+#   wirego        # show status and profiles 
+#   wirego down   # take wireguard vpn down
+#   wirego NAME   # take wireguard profile NAME.conf up (before take down any other active wireguard vpn) 
+#   wirego qr     # show QR code (needs: qrencode)
 
 
 function list_profiles() {
@@ -33,13 +33,13 @@ fi
 
 parameter=$1
 
-# check existance of /etc/wireguard/
+# check existance of /etc/wireguard
 if [ ! -d "/etc/wireguard" ]; then
   echo "The directory /etc/wireguard does not exist, exiting"
   exit 1
 fi
 
-# check existnace of wg
+# check existance of wg
 if [ "`which wg`" == "" ] ; then
   echo "cannot find wg: is Wireguard installed?"
   exit 1
@@ -67,7 +67,7 @@ fi
 if [ "$parameter" == "qr" ] ; then
   # check existnace of qrencode
   if [ "`which qrencode`" == "" ] ; then
-    echo "cannot find qrencode, you need to install it"
+    echo "cannot find utility: qrencode, you need to install it"
     exit 1
   fi
   echo "QR code generation"
