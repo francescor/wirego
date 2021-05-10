@@ -16,10 +16,12 @@ everytime I turn Wireguard down to remove from `/etc/resolv.conf` the DNS added 
 I just added this command once at the end of the script instead of having to add a `PostDown` in each wg profile.
 
 
-# Notes an limitation
+# Notes, requirements, and limitations
 
 It's just a basic script, written for Fedora Linux (v.33), so you may have to adapt to your o.s.
 Feel free to fork and adapt this code, of just suggest changes here.
+
+It requires Wireguard VPN  https://www.wireguard.com/install/ of course.
 
 # Installation
 
