@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# wirego https://github.com/francescor/wirego
+# https://github.com/francescor/wirego
 
 # run:
 #   wirego # shot status and profiles 
 #   wirego down  # take wireguard vpn down
-#   wirego NAME  # take wireguard profile NAME.conf up (before take down any other active wireguard vpn)#   wirego qr    # show QR code (needs: qrencode)
+#   wirego NAME  # take wireguard profile NAME.conf up (before take down any other active wireguard vpn) 
+#   wirego qr    # show QR code (needs: qrencode)
 
 
 function list_profiles() {
@@ -73,13 +74,13 @@ if [ "$parameter" == "qr" ] ; then
   list_profiles
   echo -n "Enter profile for which you want to see the QR code: "
   read profile
-  qrencode -t ansiutf8  < /etc/wirego/$profile.conf
+  qrencode -t ansiutf8  < /etc/wireguard/$profile.conf
   exit
 fi
 
 if [ "$parameter" == "down" ] ; then
   if [ "$active_profile" != "" ] ; then
-    sudo wg-quick down $active_profile
+    wg-quick down $active_profile
     if [ "${DISTRO}" == "fedora" ]; then
       # restart resolved to remove wireguard DNS from your /etc/resolv.conf
       sudo systemctl  restart systemd-resolved.service
@@ -102,12 +103,12 @@ if [ $result -eq 0 ] ; then
       exit
     else
       # turn it down
-      sudo wg-quick down $active_profile
+      wg-quick down $active_profile
       echo
-      sudo wg-quick up $parameter
+      wg-quick up $parameter
     fi
   else
-    sudo wg-quick up $parameter
+    wg-quick up $parameter
   fi
 else
   echo "ERROR: profile not existing"
