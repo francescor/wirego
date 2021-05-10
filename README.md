@@ -34,7 +34,7 @@ Generate QR code of a profile
 
 ## Why?
 
-Wireguard command `wg`, with it's rules, does not get into my mind :(  so I've just created this basic script for myself.
+Wireguard tool commands `wg` & `wg-quick` do not get into my head :(  so I've just created this basic script for myself.
 
 Fedora DNS handling is a bit nasty to me: I see I need to execute 
 
