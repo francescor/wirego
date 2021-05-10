@@ -1,6 +1,6 @@
 # wirego
 
-`wirego` is a simple bash script for your laptop, to manage your many Wireguard profiles
+`wirego` is a simple script to manage your laptop many Wireguard profiles
 
 
 # why?
