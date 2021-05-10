@@ -23,6 +23,8 @@ Feel free to fork and adapt this code, of just suggest changes here.
 
 It requires Wireguard VPN  https://www.wireguard.com/install/ of course.
 
+Script is made with the idea of having only one wireguard profile active at a time: so when you turn up a new profile, the active one is taken down.
+
 # Installation
 
 Just download `wirego` and save it in a directory of your $PATH, e.g.
