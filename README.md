@@ -1,5 +1,7 @@
 # wirego
-`wirego` is a simple bash script to manage your Wireguard profiles
+
+`wirego` is a simple bash script for your laptop, to manage your many Wireguard profiles
+
 
 # why?
 
@@ -28,7 +30,7 @@ sudo mv wirego /usr/local/bin
 sudo chmod +x /usr/local/bin/wirego
 ```
 
-Wireguard profiles must be save into the directory: `/etc/wireguard`
+Wireguard profiles must be saved into the directory: `/etc/wireguard`
 
 # Examples
 
