@@ -27,6 +27,10 @@ Turn down Wireguard
 
 `wirego down`
 
+Generate QR code of a profile
+
+`wirego qr`
+
 
 ## Why?
 
@@ -48,6 +52,10 @@ Feel free to fork and adapt this code, of just suggest changes here.
 
 It requires [Wireguard VPN](https://www.wireguard.com/install/) of course, and Wireguard profiles must be saved into the directory: `/etc/wireguard`
 
-
 Script is made with the idea of having *only one* Wireguard profile active at a time: so when you turn up a new profile, the active one is taken down.
 
+To generate QR code, install qrencode
+
+```
+sudo dnf install qrencode
+```
