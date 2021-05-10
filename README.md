@@ -1,6 +1,6 @@
 # wirego
 
-`wirego` is a simple script to manage your many Wireguard profiles
+`wirego` is a simple script to manage your many Wireguard's profiles
 
 
 ## Installation
@@ -19,11 +19,11 @@ List all available Wireguard profiles:
 
 `wirego`
 
-Turn on wireguard profile `/etc/wireguard/myvpn.conf`
+Turn on Wireguard profile `/etc/wireguard/myvpn.conf`
 
 `wirego myvpn`
 
-Turn off wireguard
+Turn down Wireguard
 
 `wirego down`
 
@@ -49,5 +49,5 @@ Feel free to fork and adapt this code, of just suggest changes here.
 It requires [Wireguard VPN](https://www.wireguard.com/install/) of course, and Wireguard profiles must be saved into the directory: `/etc/wireguard`
 
 
-Script is made with the idea of having *only one* wireguard profile active at a time: so when you turn up a new profile, the active one is taken down.
+Script is made with the idea of having *only one* Wireguard profile active at a time: so when you turn up a new profile, the active one is taken down.
 
