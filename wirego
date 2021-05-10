@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# run:
+#   wirego # shot status and profiles 
+#   wirego down  # take wireguard vpn down
+#   wirego NAME  # take wireguard profile NAME.conf up (before take down any other active wireguard vpn) 
+
+
+function list_profiles() {
+  echo
+  read -p "Press enter to see avaliable profiles"
+  echo
+  echo "** Available wg profiles:"
+  echo
+  echo $profiles | xargs -n1
+}
+
+# Detect Operating System
+if [ -f /etc/os-release ]; then
+  source /etc/os-release
+  DISTRO=${ID}
+fi
+
+if [ "${DISTRO}" != "fedora" ]; then
+  echo "Warning: this script have been written for Fedora, ${DISTRO} is not supported."
+  echo "         If it works on your linux, let us know"
+  echo "         If it does not, fork or adapt https://github.com/francescor/wirego, and let us know :)"
+  echo
+fi
+
+parameter=$1
+
+# load all profiles
+profiles=`sudo  ls -1 /etc/wireguard/ | grep "\.conf" | awk -F'.' '{print $1}'`
+
+# check for active profile
+active_profile=`sudo wg | grep interface | awk '{print $2}'`
+
+if [ "$parameter" == "" ] ; then
+  # no parameter, so we show the status
+  if [ "$active_profile" != "" ] ; then
+    # wg is active, so we show the status
+    echo "Wireguard is active, details:"
+    sudo wg
+  else
+    echo "wg is NOT active"
+  fi
+  list_profiles
+  exit
+fi
+
+
+if [ "$parameter" == "down" ] ; then
+  if [ "$active_profile" != "" ] ; then
+    sudo wg-quick down $active_profile
+    if [ "${DISTRO}" == "fedora" ]; then
+      # restart resolved to remove wireguard DNS from your /etc/resolv.conf
+      sudo systemctl  restart systemd-resolved.service
+    fi
+  else
+    echo "wg is already down"
+  fi
+  exit
+fi
+
+# we get here if there is no profile in parameter, so we turn it on if it exists
+test_profile_existance=`echo $profiles | grep $parameter `
+result=$?
+if [ $result -eq 0 ] ; then
+  # turn down any other active wg
+  if [ "$active_profile" != "" ] ; then
+    if [ "$active_profile" == "$parameter" ] ; then
+      echo "Wireguard $parameter is already up, details:"
+      sudo wg
+      exit
+    else
+      # turn it down
+      sudo wg-quick down $active_profile
+      echo
+      sudo wg-quick up $parameter
+    fi
+  else
+    sudo wg-quick up $parameter
+  fi
+else
+  echo "ERROR: profile not existing"
+  echo
+  list_profiles
+fi
