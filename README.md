@@ -1,6 +1,6 @@
 # wirego
 
-`wirego` is a simple script to manage your laptop many Wireguard profiles
+`wirego` is a simple script to manage your many Wireguard profiles
 
 
 ## Installation
