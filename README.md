@@ -1,14 +1,13 @@
 # wirego
-Simple Wireguard bash script manager
-
+`wirego` is a simple bash script to manage your Wireguard profiles
 
 # why?
 
-Wireguard command `wg`, with it's rulws, does not get into my mind, so I just create this basic script for myself
+Wireguard command `wg`, with it's rulws, does not get into my mind :(  so I just create this basic script for myself
 
 # Notes an limitation
 
-It's a basic script, but written for Fedora Linux (v.33), so you may have to adapt to your o.s.
+It's just a basic script, written for Fedora Linux (v.33), so you may have to adapt to your o.s.
 
 # Installation
 
@@ -19,6 +18,8 @@ wget https://raw.githubusercontent.com/francescor/wirego/main/wirego
 sudo mv wirego /usr/local/bin
 sudo chmod +x /usr/local/bin/wirego
 ```
+
+Wireguard profiles must be save into the directory: `/etc/wireguard`
 
 # Examples
 
