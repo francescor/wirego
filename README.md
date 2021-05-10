@@ -3,7 +3,7 @@
 `wirego` is a simple script to manage your laptop many Wireguard profiles
 
 
-# Installation
+## Installation
 
 Just download `wirego` and save it in a directory of your $PATH, e.g.
 
@@ -13,7 +13,7 @@ sudo mv wirego /usr/local/bin
 sudo chmod +x /usr/local/bin/wirego
 ```
 
-# Examples
+## Examples
 
 List all available Wireguard profiles:
 
