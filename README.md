@@ -19,6 +19,7 @@ I just added this command once at the end of the script instead of having to add
 # Notes an limitation
 
 It's just a basic script, written for Fedora Linux (v.33), so you may have to adapt to your o.s.
+Feel free to fork and adapt this code, of just suggest changes here.
 
 # Installation
 
