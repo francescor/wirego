@@ -50,7 +50,11 @@ I just added this command once at the end of the script, instead of having to ad
 It's just a basic script, written for Fedora Linux (v.33), so you may have to adapt it to your o.s.
 Feel free to fork and adapt this code, of just suggest changes here.
 
-It requires [Wireguard VPN](https://www.wireguard.com/install/) of course, and Wireguard profiles must be saved into the directory: `/etc/wireguard`
+It requires:
+* [Wireguard VPN](https://www.wireguard.com/install/) of course;
+* [wireguard-tools](https://git.zx2c4.com/wireguard-tools/about/), so its great `wg` utility;
+
+and Wireguard profiles must be saved into the directory: `/etc/wireguard`
 
 Script is made with the idea of having *only one* Wireguard profile active at a time: so when you turn up a new profile, the active one is taken down.
 
