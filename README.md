@@ -47,7 +47,7 @@ I just added this command once at the end of the script, instead of having to ad
 
 ## Notes, requirements, and limitations
 
-It's just a basic script, written for Fedora Linux (v.33), so you may have to adapt it to your o.s.
+It's just a basic script, written for Fedora Linux (v.33, 34), so you may have to adapt it to your o.s.
 Feel free to fork and adapt this code, of just suggest changes here.
 
 It requires:
