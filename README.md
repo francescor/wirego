@@ -27,7 +27,7 @@ Turn down Wireguard
 
 `wirego down`
 
-Generate QR code of a profile
+Generate the QR code of a profile
 
 `wirego qr`
 
