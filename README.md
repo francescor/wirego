@@ -9,8 +9,8 @@ Just download `wirego` and save it in a directory of your $PATH, e.g.
 
 ```
 wget https://raw.githubusercontent.com/francescor/wirego/main/wirego
+chmod +x /usr/local/bin/wirego
 sudo mv wirego /usr/local/bin
-sudo chmod +x /usr/local/bin/wirego
 ```
 
 ## Examples
