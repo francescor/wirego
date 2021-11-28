@@ -40,11 +40,14 @@ function wg-quick-with-message() {
 function wirego_down() {
   for active_profile in $active_profiles; do
     wg-quick-with-message down $active_profile
-    if [ "${DISTRO}" == "fedora" ]; then
-      # restart resolved to remove wireguard DNS from your /etc/resolv.conf
-      sudo systemctl  restart systemd-resolved.service
-    fi
   done
+  if [ "${DISTRO}" == "fedora" ]; then
+    # restart resolved to safely remove any wireguard DNS entries from your /etc/resolv.conf
+    # 
+    # the follywing bypass 'start-limit-hit' so to avoid failure ("Start request repeated too quickly")
+    sudo systemctl reset-failed systemd-resolved.service
+    sudo systemctl restart systemd-resolved.service
+  fi
 } 
 
 # Detect Operating System
@@ -79,6 +82,7 @@ active_profiles=`sudo wg | grep interface | awk '{print $2}'`
 
 # up selected
 if [ "$1" == "up" ] ; then
+  wirego_down
   for up_profile in $up_profiles; do
     wg-quick-with-message up $up_profile
     # echo -n "press ENTER to continue"; read 
@@ -125,21 +129,17 @@ if [ "$parameter" == "down" ] ; then
   exit
 fi
 
-# we get here if there is no profile in parameter, so we turn it on if it exists
+# we get here if parameter is a single profile
 test_profile_existance=`echo $profiles | grep $parameter `
 result=$?
+# check profile existance
 if [ $result -eq 0 ] ; then
   # turn down any other active wg
   # including the requested one
-  if [ "$active_profiles" != "" ] ; then
-    for active_profile in $active_profiles ; do
-      if [ "$active_profile" == "$parameter" ] ; then
-        echo "Wireguard $parameter was already up, taking it down anyway"
-      fi
-      # turn it down
-      wg-quick-with-message down $active_profile
-    done
+  if [ "$active_profile" == "$parameter" ] ; then
+    echo "Wireguard $parameter was already up, taking it down anyway"
   fi
+  wirego_down
   wg-quick-with-message up $parameter
 else
   echo "ERROR: profile not existing"
