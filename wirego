@@ -3,10 +3,16 @@
 # https://github.com/francescor/wirego
 
 # run:
-#   wirego        # show status and profiles 
-#   wirego down   # take wireguard vpn down
-#   wirego NAME   # take wireguard profile NAME.conf up (before take down any other active wireguard vpn) 
-#   wirego qr     # show QR code (needs: qrencode)
+#   wirego # show status and profiles 
+#   wirego down  # take wireguard vpn down
+#   wirego NAME  # take wireguard profile NAME.conf up (before take down any other active wireguard vpn) 
+#   wirego qr    # show QR code (needs: qrencode)
+ 
+mkdir -p ~/.wirego
+touch ~/.wirego/wirego.profile
+up_profiles=""
+# load up profiles
+. ~/.wirego/wirego.profile
 
 
 function list_profiles() {
@@ -33,27 +39,39 @@ fi
 
 parameter=$1
 
-# check existance of /etc/wireguard
+# check existance of /etc/wireguard/
 if [ ! -d "/etc/wireguard" ]; then
   echo "The directory /etc/wireguard does not exist, exiting"
   exit 1
 fi
 
-# check existance of wg
+# check existnace of wg
 if [ "`which wg`" == "" ] ; then
   echo "cannot find wg: is Wireguard installed?"
   exit 1
 fi
 
+# check for active profile
+active_profiles=`sudo wg | grep interface | awk '{print $2}'`
+
+# up selected
+# check existnace of wg
+if [ "$1" == "up" ] ; then
+  for up_profile in $up_profiles; do
+    echo "----------------------"
+    echo "Taking up: $up_profile"
+    wg-quick up $up_profile
+    echo "----------------------"
+  done
+  exit
+fi
+
 # load all profiles
 profiles=`sudo  ls -1 /etc/wireguard/ | grep "\.conf" | awk -F'.' '{print $1}'`
 
-# check for active profile
-active_profile=`sudo wg | grep interface | awk '{print $2}'`
-
 if [ "$parameter" == "" ] ; then
   # no parameter, so we show the status
-  if [ "$active_profile" != "" ] ; then
+  if [ "$active_profiles" != "" ] ; then
     # wg is active, so we show the status
     echo "Wireguard is active, details:"
     sudo wg
@@ -67,7 +85,7 @@ fi
 if [ "$parameter" == "qr" ] ; then
   # check existnace of qrencode
   if [ "`which qrencode`" == "" ] ; then
-    echo "cannot find utility: qrencode, you need to install it"
+    echo "cannot find qrencode, you need to install it"
     exit 1
   fi
   echo "QR code generation"
@@ -79,12 +97,18 @@ if [ "$parameter" == "qr" ] ; then
 fi
 
 if [ "$parameter" == "down" ] ; then
-  if [ "$active_profile" != "" ] ; then
-    wg-quick down $active_profile
-    if [ "${DISTRO}" == "fedora" ]; then
-      # restart resolved to remove wireguard DNS from your /etc/resolv.conf
-      sudo systemctl  restart systemd-resolved.service
-    fi
+  if [ "$active_profiles" != "" ] ; then
+    for active_profile in $active_profiles; do
+      echo "----------------------"
+      echo "Taking down: $active_profile"
+      wg-quick down $active_profile
+      echo
+      if [ "${DISTRO}" == "fedora" ]; then
+        # restart resolved to remove wireguard DNS from your /etc/resolv.conf
+        sudo systemctl  restart systemd-resolved.service
+      fi
+      echo "----------------------"
+    done
   else
     echo "wg is already down"
   fi
@@ -96,14 +120,14 @@ test_profile_existance=`echo $profiles | grep $parameter `
 result=$?
 if [ $result -eq 0 ] ; then
   # turn down any other active wg
-  if [ "$active_profile" != "" ] ; then
-    if [ "$active_profile" == "$parameter" ] ; then
+  if [ "$active_profiles" != "" ] ; then
+    if [ "$active_profiles" == "$parameter" ] ; then
       echo "Wireguard $parameter is already up, details:"
       sudo wg
       exit
     else
       # turn it down
-      wg-quick down $active_profile
+      wg-quick down $active_profiles
       echo
       wg-quick up $parameter
     fi
