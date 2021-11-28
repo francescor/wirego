@@ -62,6 +62,7 @@ if [ "$1" == "up" ] ; then
     echo "Taking up: $up_profile"
     wg-quick up $up_profile
     echo "----------------------"
+    # echo -n "press ENTER to continue"; read 
   done
   exit
 fi
