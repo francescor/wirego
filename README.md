@@ -74,7 +74,7 @@ It requires:
 
 and Wireguard profiles must be saved into the directory: `/etc/wireguard`
 
-Script is made with the idea of having *only one* Wireguard profile active at a time: so when you turn up a new profile, the active one is taken down.
+Script is based on the convention that when you activate one profile (or many profiles), all active ones are first taken down.
 
 To generate QR code, install qrencode
 
