@@ -92,7 +92,7 @@ if [ "$parameter" == "qr" ] ; then
   list_profiles
   echo -n "Enter profile for which you want to see the QR code: "
   read profile
-  qrencode -t ansiutf8  < /etc/wireguard/$profile.conf
+  sudo cat /etc/wireguard/$profile.conf | qrencode -t ansiutf8 
   exit
 fi
 
