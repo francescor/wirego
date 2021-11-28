@@ -37,6 +37,16 @@ function wg-quick-with-message() {
   wg-quick $up_down $profile
 }
 
+function wirego_down() {
+  for active_profile in $active_profiles; do
+    wg-quick-with-message down $active_profile
+    if [ "${DISTRO}" == "fedora" ]; then
+      # restart resolved to remove wireguard DNS from your /etc/resolv.conf
+      sudo systemctl  restart systemd-resolved.service
+    fi
+  done
+} 
+
 # Detect Operating System
 if [ -f /etc/os-release ]; then
   source /etc/os-release
@@ -108,15 +118,8 @@ fi
 
 if [ "$parameter" == "down" ] ; then
   if [ "$active_profiles" != "" ] ; then
-    for active_profile in $active_profiles; do
-      wg-quick-with-message down $active_profile
-      echo
-      if [ "${DISTRO}" == "fedora" ]; then
-        # restart resolved to remove wireguard DNS from your /etc/resolv.conf
-        sudo systemctl  restart systemd-resolved.service
-      fi
-    done
-  else
+    wirego_down
+ else
     echo "wg is already down"
   fi
   exit
