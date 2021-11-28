@@ -44,6 +44,19 @@ sudo systemctl  restart systemd-resolved.service
 everytime I turn down Wireguard (to remove from `/etc/resolv.conf` the DNS added by the Wireguard VPN), so 
 I just added this command once at the end of the script, instead of having to add a `PostDown` in each wg profile.
 
+## Configuration file
+
+An empty configuration file is created in your HOME: `~/.wirego/wirego.profile`
+
+It is useful to store a list of Wireguard profiles you want to take up all together
+
+e.g. add the following
+```
+# Ordered list of wireguard profiles to take up with `wirego up`
+up_profiles="office1 office2 office3"
+```
+
+the with `wirego up`, all those profiles will be up
 
 ## Notes, requirements, and limitations
 
