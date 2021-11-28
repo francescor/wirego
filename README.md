@@ -50,13 +50,16 @@ An empty configuration file is created in your HOME: `~/.wirego/wirego.profile`
 
 It is useful to store a list of Wireguard profiles you want to take up all together
 
-e.g. add the following
+e.g. with this content in `~/.wirego/wirego.profile`
 ```
 # Ordered list of wireguard profiles to take up with `wirego up`
 up_profiles="office1 office2 office3"
 ```
-
-the with `wirego up`, all those profiles will be up
+the command:
+```
+wirego up
+```
+will activete all three wireguard profiles
 
 ## Notes, requirements, and limitations
 
