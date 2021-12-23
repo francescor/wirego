@@ -23,7 +23,11 @@ Turn on Wireguard profile `/etc/wireguard/myvpn.conf`
 
 `wirego myvpn`
 
-Turn down Wireguard
+Turn on many Wireguard profiles 
+
+`wirego up`
+
+Turn down any active Wireguard
 
 `wirego down`
 
@@ -61,7 +65,8 @@ the command:
 ```
 wirego up
 ```
-will activete all three wireguard profiles
+will activete all three wireguard profiles: note that if profiles set DNS, the last profile will `win`; 
+at the same time only one profile should have the "catch all" directive: `AllowedIPs = 0.0.0.0/0`.
 
 ## Notes, requirements, and limitations
 
