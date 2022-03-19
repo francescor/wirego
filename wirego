@@ -78,8 +78,7 @@ if [ "`which wg`" == "" ] ; then
 fi
 
 # check for active profile
-# we reverse the order, to be able to turn profiles down starting from the last added
-active_profiles=`sudo wg | grep interface | awk '{print $2}' | tac`
+active_profiles=`sudo wg | grep interface | awk '{print $2}'`
 
 # up selected
 if [ "$1" == "up" ] ; then
