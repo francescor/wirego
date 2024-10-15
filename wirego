@@ -1,149 +1,155 @@
 #!/bin/bash
 
-# https://github.com/francescor/wirego
+# Wirego: A script to manage WireGuard VPN profiles
+# Repository: https://github.com/francescor/wirego
 
-# run:
-#   wirego # show status and profiles 
-#   wirego down  # take wireguard vpn down
-#   wirego NAME  # take wireguard profile NAME.conf up (before take down any other active wireguard vpn) 
-#   wirego qr    # show QR code (needs: qrencode)
- 
+# Create necessary directories and files
 mkdir -p ~/.wirego
 touch ~/.wirego/wirego.profile
-up_profiles=""
-# load up profiles
-. ~/.wirego/wirego.profile
 
+# Load profiles from the wirego.profile file
+source ~/.wirego/wirego.profile
 
+# Function to list available profiles
 function list_profiles() {
-  echo
-  read -p "Press enter to see avaliable profiles"
-  echo
-  echo "** Available wg profiles:"
-  echo
-  echo $profiles | xargs -n1
+    echo
+    read -rp "Press enter to see available profiles"
+    echo
+    echo "** Available WireGuard profiles:"
+    echo
+    echo "$profiles" | xargs -n1
 }
 
+# Function to output messages
 function output_message() {
-  echo "----------------------"
-  echo "Taking $1: $2"
-  echo "----------------------"
+    echo "----------------------"
+    echo "Taking $1: $2"
+    echo "----------------------"
 }
 
-function wg-quick-with-message() {
-  up_down=$1
-  profile=$2
-  output_message ${up_down^^} $profile
-  wg-quick $up_down $profile
+# Function to manage wg-quick commands with messages
+function wg_quick_with_message() {
+    local action=$1
+    local profile=$2
+    output_message "${action^^}" "$profile"
+    wg-quick "$action" "$profile"
 }
 
+# Function to take down all active profiles
 function wirego_down() {
-  for active_profile in $active_profiles; do
-    wg-quick-with-message down $active_profile
-  done
-  if [ "${DISTRO}" == "fedora" ]; then
-    # restart resolved to safely remove any wireguard DNS entries from your /etc/resolv.conf
-    # 
-    # the follywing bypass 'start-limit-hit' so to avoid failure ("Start request repeated too quickly")
-    sudo systemctl reset-failed systemd-resolved.service
-    sudo systemctl restart systemd-resolved.service
-  fi
-} 
+    for active_profile in $active_profiles; do
+        wg_quick_with_message down "$active_profile"
+    done
 
-# Detect Operating System
+    # Restart DNS resolver on Fedora
+    if [ "${DISTRO}" == "fedora" ]; then
+        sudo systemctl reset-failed systemd-resolved.service
+        sudo systemctl restart systemd-resolved.service
+    fi
+}
+
+# Detect Operating System and set DISTRO variable
 if [ -f /etc/os-release ]; then
-  source /etc/os-release
-  DISTRO=${ID}
+    source /etc/os-release
+    DISTRO=${ID}
+else
+    echo "Unable to detect OS. Exiting."
+    exit 1
 fi
 
-if [ "${DISTRO}" != "fedora" ]; then
-  echo "Warning: this script have been written for Fedora, ${DISTRO} is not supported."
-  echo "         If it works on your linux, let us know"
-  echo "         If it does not, fork or adapt https://github.com/francescor/wirego, and let us know :)"
-  echo
+# Check for supported distributions (Fedora, Ubuntu)
+if [[ "${DISTRO}" != "fedora" && "${DISTRO}" != "ubuntu" && "${DISTRO}" != "darwin" ]]; then
+    echo "Warning: This script has been tested only with Fedora & Ubuntu. It may not work perfectly with ${DISTRO}."
+    echo "If it does, please let us know."
+    echo
 fi
 
 parameter=$1
 
-# check existance of /etc/wireguard/
+# Check existence of /etc/wireguard/
 if [ ! -d "/etc/wireguard" ]; then
-  echo "The directory /etc/wireguard does not exist, exiting"
-  exit 1
-fi
-
-# check existnace of wg
-if [ "`which wg`" == "" ] ; then
-  echo "cannot find wg: is Wireguard installed?"
-  exit 1
-fi
-
-# check for active profile
-active_profiles=`sudo wg | grep interface | awk '{print $2}'`
-
-# up selected
-if [ "$1" == "up" ] ; then
-  wirego_down
-  for up_profile in $up_profiles; do
-    wg-quick-with-message up $up_profile
-    # echo -n "press ENTER to continue"; read 
-  done
-  exit
-fi
-
-# load all profiles
-profiles=`sudo  ls -1 /etc/wireguard/ | grep "\.conf" | awk -F'.' '{print $1}'`
-
-if [ "$parameter" == "" ] ; then
-  # no parameter, so we show the status
-  if [ "$active_profiles" != "" ] ; then
-    # wg is active, so we show the status
-    echo "Wireguard is active, details:"
-    sudo wg
-  else
-    echo "wg is NOT active"
-  fi
-  list_profiles
-  exit
-fi
-
-if [ "$parameter" == "qr" ] ; then
-  # check existnace of qrencode
-  if [ "`which qrencode`" == "" ] ; then
-    echo "cannot find qrencode, you need to install it"
+    echo "The directory /etc/wireguard does not exist. Exiting."
     exit 1
-  fi
-  echo "QR code generation"
-  list_profiles
-  echo -n "Enter profile for which you want to see the QR code: "
-  read profile
-  sudo cat /etc/wireguard/$profile.conf | qrencode -t ansiutf8 
-  exit
 fi
 
-if [ "$parameter" == "down" ] ; then
-  if [ "$active_profiles" != "" ] ; then
+# Check existence of wg command
+if ! command -v wg &> /dev/null; then
+    echo "Cannot find 'wg': Is WireGuard installed?"
+    exit 1
+fi
+
+# Get active profiles from WireGuard status
+active_profiles=$(sudo wg | grep interface | awk '{print $2}')
+
+# Handle 'up' command to activate selected profiles
+if [ "$parameter" == "up" ]; then
     wirego_down
- else
-    echo "wg is already down"
-  fi
-  exit
+
+    for up_profile in $active_profiles; do
+        wg_quick_with_message up "$up_profile"
+    done
+
+    exit 0
 fi
 
-# we get here if parameter is a single profile
-test_profile_existance=`echo $profiles | grep $parameter `
-result=$?
-# check profile existance
-if [ $result -eq 0 ] ; then
-  # turn down any other active wg
-  # including the requested one
-  if [ "$active_profile" == "$parameter" ] ; then
-    echo "Wireguard $parameter was already up, taking it down anyway"
-  fi
-  wirego_down
-  wg-quick-with-message up $parameter
+# Load all available profiles from /etc/wireguard/
+profiles=$(sudo ls -1 /etc/wireguard/ | grep "\.conf" | awk -F'.' '{print $1}')
+
+if [ -z "$parameter" ]; then
+    # Show current status if no parameter is provided
+    if [ -n "$active_profiles" ]; then
+        echo "WireGuard is active, details:"
+        sudo wg
+    else
+        echo "WireGuard is NOT active."
+    fi
+
+    list_profiles
+    exit 0
+fi
+
+if [ "$parameter" == "qr" ]; then
+    # Check for qrencode installation for QR code generation
+    if ! command -v qrencode &> /dev/null; then
+        echo "Cannot find 'qrencode'. You need to install it."
+        exit 1
+    fi
+
+    echo "QR code generation"
+
+    list_profiles
+
+    read -rp "Enter profile for which you want to see the QR code: " profile_name
+
+    # Check if the profile exists with sudo
+	if ! sudo test -f "/etc/wireguard/${profile_name}.conf"; then
+		echo "Profile '$profile_name' does not exist."
+		exit 1
+	fi
+
+    sudo cat "/etc/wireguard/$profile_name.conf" | qrencode -t ansiutf8
+    exit 0
+fi
+
+if [ "$parameter" == "down" ]; then
+   if [ -n "$active_profiles" ]; then
+       wirego_down
+   else
+       echo "WireGuard is already down."
+   fi
+   exit 0
+fi
+
+# Validate profile existence and bring it up if valid
+if [[ "$profiles" == *"$parameter"* ]]; then
+   if [[ "$active_profiles" == *"$parameter"* ]]; then
+       echo "WireGuard profile '$parameter' is already up. Taking it down anyway."
+   fi
+
+   wirego_down
+   wg_quick_with_message up "$parameter"
 else
-  echo "ERROR: profile not existing"
-  echo
-  list_profiles
-  exit 1
+   echo "ERROR: Profile '$parameter' does not exist."
+   list_profiles
+   exit 1
 fi
