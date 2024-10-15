@@ -1,6 +1,6 @@
 # wirego
 
-`wirego` is a simple script to manage your many Wireguard's profiles
+`wirego` is a basic script to manage your many Wireguard's profiles.
 
 
 ## Installation
@@ -23,7 +23,7 @@ Turn on Wireguard profile `/etc/wireguard/myvpn.conf`
 
 `wirego myvpn`
 
-Turn on many Wireguard profiles 
+Turn up all Wireguard profiles defined in `~/.wirego/wirego.profile` (prior do taking down all previous active Wireguard profiles)
 
 `wirego up`
 
@@ -31,23 +31,22 @@ Turn down any active Wireguard
 
 `wirego down`
 
-Generate the QR code of a profile
+Show the QR code of a profile
 
 `wirego qr`
 
 
 ## Why?
 
-Wireguard tool commands `wg` & `wg-quick` do not get into my head :(  so I've just created this basic script for myself.  
-In my daily job I take up and down Wireguard's profile a lot, and some together at the same time, so I do use this 
-scrip myself a lot.
+Wireguard tool commands `wg` & `wg-quick` do not get into my head :(  so I've just created this basic script for myself.
+I find myself taking up and down differen Wireguard profiles very often, and definitively many at the same time, so I just needed this script myself.
 
-Fedora DNS handling is a bit nasty to me: I see I need to execute 
+Btw, Fedora DNS handling is a bit nasty to me: I see I need to execute
 
 ```
 sudo systemctl  restart systemd-resolved.service
 ```
-everytime I turn down Wireguard (to remove from `/etc/resolv.conf` the DNS added by the Wireguard VPN), so 
+everytime I turn down Wireguard (to remove from `/etc/resolv.conf` the DNS added by the Wireguard VPN), so
 I just added this command once at the end of the script, instead of having to add a `PostDown` in each wg profile.
 
 ## Configuration file
@@ -65,23 +64,24 @@ the command:
 ```
 wirego up
 ```
-will activete all three wireguard profiles: note that if profiles set DNS, the last profile will `win`; 
-at the same time only one profile should have the "catch all" directive: `AllowedIPs = 0.0.0.0/0`.
+will activete all three wireguard profiles: note that if one or more profiles set the DNS, the last profile will `win`, of course;
+at the same time only one profile should have the "catch all" directive: `AllowedIPs = 0.0.0.0/0` but, as you know, you can skip this if you want
+to surf the internet with your modem's pulic IP: this is pretty useful when your customers provides you with their Wireguard as a way to give you a public address that allows you to access their web services: you do not want to surf the internet with their IP (just their servers).
 
 ## Notes, requirements, and limitations
 
-It's just a basic script, written for Fedora Linux (v.33, 34), so you may have to adapt it to your o.s.
+It's just a basic script, written for Fedora Linux (v.33... 40), so you may have to adapt it to your o.s.
 Feel free to fork and adapt this code, of just suggest changes here.
 
 It requires:
 * [Wireguard VPN](https://www.wireguard.com/install/) of course;
 * [wireguard-tools](https://git.zx2c4.com/wireguard-tools/about/), so its great `wg` utility;
 
-and Wireguard profiles must be saved into the directory: `/etc/wireguard`
+and Wireguard profiles should be saved into the directory: `/etc/wireguard`
 
 Script is based on the convention that when you activate one profile (or many profiles), all active ones are first taken down.
 
-To generate QR code, install qrencode
+To generate QR code with `wirego qr` (useful to move your vpn to a mobile phone), you need `qrencode`
 
 ```
 sudo dnf install qrencode
