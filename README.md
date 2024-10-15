@@ -74,8 +74,9 @@ It's just a basic script, written for Fedora Linux (v.33... 40), so you may have
 Feel free to fork and adapt this code, of just suggest changes here.
 
 It requires:
-* [Wireguard VPN](https://www.wireguard.com/install/) of course;
-* [wireguard-tools](https://git.zx2c4.com/wireguard-tools/about/), so its great `wg` utility;
+* [Wireguard VPN module](https://www.wireguard.com/install/) which is probably already available in your Linux;
+* [wireguard-tools](https://www.wireguard.com/install/) (`dnf install wireguard-tools`) that provides its great `wg` utility;
+* `sudo`
 
 and Wireguard profiles should be saved into the directory: `/etc/wireguard`
 
