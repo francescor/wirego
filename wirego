@@ -6,9 +6,7 @@
 # Create necessary directories and files
 mkdir -p ~/.wirego
 touch ~/.wirego/wirego.profile
-
-# Load profiles from the wirego.profile file
-source ~/.wirego/wirego.profile
+chmod 600 ~/.wirego/wirego.profile
 
 # Function to list available profiles
 function list_profiles() {
@@ -85,7 +83,10 @@ active_profiles=$(sudo wg | grep interface | awk '{print $2}')
 if [ "$parameter" == "up" ]; then
     wirego_down
 
-    for up_profile in $active_profiles; do
+    # Load profiles from the wirego.profile file
+    # so, populate $up_profiles
+    source ~/.wirego/wirego.profile
+    for up_profile in $up_profiles; do
         wg_quick_with_message up "$up_profile"
     done
 
